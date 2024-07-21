@@ -8,7 +8,7 @@ function App() {
   
 
   return (
-    <div className='w-full p-4 h-screen flex items-center justify-center'>
+    <div className='h-screen'>
      <Home/>
     </div>
   )

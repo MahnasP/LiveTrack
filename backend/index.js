@@ -1,9 +1,14 @@
 import express from "express";
 import { Server } from "socket.io";
 import http from "http";
-import cors from "cors"
+import cors from "cors";
+import dotenv from "dotenv";
 
-const app = express();
+dotenv.config({
+    path: "./.env",
+  });
+
+export const app = express();
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
@@ -22,10 +27,18 @@ export const io = new Server(server, {
     }
 })
 
+let socketPosMap = {};//{socket.id: position: pos-array}//convert this to Map
+
 io.on("connection", (socket) => {
     console.log("a user connected: ", socket.id);
+    socket.on("send-location", (pos) => {
+        socketPosMap[socket.id] = pos;
+        io.emit("get-locations", socketPosMap);
+    })
     socket.on("disconnect", () => {
         console.log("user disconnected", socket.id);
+        delete socketPosMap[socket.id];
+        io.emit("get-locations", socketPosMap);
       }); 
 })
 
